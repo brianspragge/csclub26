@@ -14,6 +14,15 @@
 
 We have a few options for creating a game with Pyxel.  It works on all platforms, Windows/Mac/Linux, and possibly more.  Use VSCode, Vim, Online, are just a few of the many options.  There are extensions for VSCode that can be used with Pyxel.  It may be best to start a Codebase within github and work directly from there.  Which will you choose?
 
+## Setup for the Web
+
+1. [None!  Just click here and start](https://kitao.github.io/pyxel/wasm/code-maker/)
+2. I highly recommend playing around with the web before our next meeting.  Make the smily face move in a different direction, dupe him, etc.
+
+## Setup for VSCode
+
+0. No idea yet.
+
 ## Linux Setup for Vim/Nano/Emacs/etc
 
 1. Create your programming directory:
@@ -42,10 +51,10 @@ We have a few options for creating a game with Pyxel.  It works on all platforms
    ```
 7. (Optional) Might need to `git remote add` in order to work on this together.
 
-## Setup for VSCode
+## Steps to build this game as a group
 
-0. No idea yet.
-
-## Setup for the Web
-
-1. [None!  Just click here and start](https://kitao.github.io/pyxel/wasm/code-maker/)
+1. Invention:   Main Ideas like a bubble chart.
+2. Planning:    Putting ideas into list with todos.
+3. Drafting:    Working on each todo. Focus on clarity, not perfection.
+4. Revising:    Take a step back and make sure vision is clear. Test.
+5. Editing:     Touch ups, polish, spelling mistakes, finish assets.
