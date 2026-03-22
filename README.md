@@ -9,6 +9,7 @@
 - [Python pip](https://www.w3schools.com/python/python_pip.asp)
 - [Pyxel](https://github.com/kitao/pyxel) - A retro game engine for Python
 - [Pyxel API Reference](https://kitao.github.io/pyxel/wasm/api-reference/) - Documentation for the Pyxel API
+- [Pyxel Video Tutorial](https://www.youtube.com/watch?v=gXpe9HZ3Au8&list=PLp_k-oh2bNHairxWQK_SYL5Me_OBJYJs8) - Video Tutorials
 
 ## Options
 
@@ -29,28 +30,30 @@ We have a few options for creating a game with Pyxel.  It works on all platforms
    ```bash
    mkdir Repos; cd Repos
    ```
-2. Create a python environment:
-   ```bash
-   python3 -m venv .env
-   ```
-3. Activate the new python env:
-   ```bash
-   source .env/bin/activate
-   ```
-4. Upgrade the env:
-   ```bash
-   pip install --upgrade pip
-   ```
-5. Install Pyxel into that env:
-   ```bash
-   pip install -U pyxel
-   ```
-6. Download the github repo for our game code:
+2. Download the github repo for our game code:
    ```bash
    git clone https://github.com/brianspragge/csclub26.git
    ```
-7. (Optional) Might need to `git remote add` in order to work on this together.
+3. (Optional) Might need to `git remote add` in order to work on this together.
 
+4. Create a python environment:
+   ```bash
+   python3 -m venv .env
+   ```
+   WARNING: Never commit an .env
+
+5. Activate the new python env:
+   ```bash
+   source .env/bin/activate
+   ```
+6. Upgrade the env:
+   ```bash
+   pip install --upgrade pip
+   ```
+7. Install Pyxel into that env:
+   ```bash
+   pip install -U pyxel
+   ```
 ## Steps to build this game as a group
 
 1. Invention:   Main Ideas like a bubble chart.
