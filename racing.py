@@ -23,6 +23,7 @@ class App:
             display_scale=12,
             capture_scale=6,
         )
+        pyxel.load("resources.pyxres")
         self.init_sound()
         self.car_x      = SCREEN_W / 2
         self.car_y      = SCREEN_H / 2
@@ -166,15 +167,18 @@ class App:
 
         pyxel.cls(3)
 
-        # Draw car
+        # Draw triangle
         x1 = self.car_x + math.cos(self.car_angle) * 8
         y1 = self.car_y + math.sin(self.car_angle) * 8
-        x2 = self.car_x + math.cos(self.car_angle + 2.5) * 5
-        y2 = self.car_y + math.sin(self.car_angle + 2.5) * 5
-        x3 = self.car_x + math.cos(self.car_angle - 2.5) * 5
-        y3 = self.car_y + math.sin(self.car_angle - 2.5) * 5
+        # x2 = self.car_x + math.cos(self.car_angle + 2.5) * 5
+        # y2 = self.car_y + math.sin(self.car_angle + 2.5) * 5
+        # x3 = self.car_x + math.cos(self.car_angle - 2.5) * 5
+        # y3 = self.car_y + math.sin(self.car_angle - 2.5) * 5
 
-        pyxel.tri(x1, y1, x2, y2, x3, y3, 255)
+        # pyxel.tri(x1, y1, x2, y2, x3, y3, 200)
+
+        # Draw car from resources.pyxres
+        pyxel.blt(x1, y1, 0, 0, 0, 8, 8, 0)
 
         # Draw score
         pyxel.rect(0, 0, SCREEN_W, SCORE_H, 5)
