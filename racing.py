@@ -12,7 +12,6 @@ SCREEN_W = 256
 SCREEN_H = 256
 SCORE_H  = pyxel.FONT_HEIGHT
 
-
 class App:
     def __init__(self):
         pyxel.init(
@@ -25,19 +24,20 @@ class App:
         )
         pyxel.load("resources.pyxres")
         self.init_sound()
-        self.car_x      = SCREEN_W / 2
-        self.car_y      = SCREEN_H / 2
-        self.car_angle  = 0.0  # Radians
-        self.speed      = 0.0
-        self.max_speed  = 5
-        self.turn_speed = 0.07
+        self.car = {"pos": {"x":  SCREEN_W / 2,
+                            "y":  SCREEN_H / 2},
+                    "angle":      0.0,           # Radians
+                    "speed":      0.0,
+                    "max_speed":  5,
+                    "turn_speed": 0.07}
         self.reset()
         pyxel.run(self.update, self.draw)
 
     def init_sound(self):
         """Music taken from Pyxel's snake game example."""
         pyxel.sounds[0].set(
-            notes="c3e3g3c4c4", tones="s", volumes="4", effects="nnnnf", speed=7
+            notes="c3e3g3c4c4", tones="s", volumes="4",
+            effects="nnnnf", speed=7
         )
         pyxel.sounds[1].set(
             notes="f3 b2 f2 b1  f1 f1 f1 f1",
@@ -103,12 +103,12 @@ class App:
 
     def reset(self):
         """Reset game state and objects on game restart."""
-        self.death      = False
-        self.score      = 0.0
-        self.car_x      = SCREEN_W / 2
-        self.car_y      = SCREEN_H / 2
-        self.car_angle  = 0  # Radians
-        self.speed      = 0
+        self.death       = False
+        self.speedometer = 0.0
+        self.car["pos"]["x"] = SCREEN_W / 2
+        self.car["pos"]["y"] = SCREEN_H / 2
+        self.car["angle"]    = 0.0
+        self.car["speed"]    = 0.0
         pyxel.playm(0, loop=True)
 
     def update(self):
@@ -118,46 +118,81 @@ class App:
             pyxel.quit()
 
         # Reset game
-        if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
+        if pyxel.btnp(pyxel.KEY_R) \
+        or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_START):
             self.reset()
 
         if not self.death:
-            self.update_direction()
             self.update_car()
             self.check_death()
 
-    def update_direction(self):
-        """Update the direction of car each frame."""
-        # Turning left and right
-        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
-            self.car_angle -= self.turn_speed
-        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
-            self.car_angle += self.turn_speed
-
-        self.car_x += math.cos(self.car_angle) * self.speed
-        self.car_y += math.sin(self.car_angle) * self.speed
-
     def update_car(self):
-        """Update the speed, acceleration, and breaking of car each frame."""
+        """Calculate new position of car based on key press."""
         # Gas and brake
-        if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
-            self.speed = min(self.speed + 0.1, self.max_speed)
-        elif pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
-            self.speed = max(self.speed - 0.1, -self.max_speed/2)
+        if pyxel.btn(pyxel.KEY_UP) \
+        or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
+            self.car["speed"] = min(self.car["speed"] + 0.1, self.car["max_speed"])
+        elif pyxel.btn(pyxel.KEY_DOWN) \
+        or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
+            self.car["speed"] = max(self.car["speed"] - 0.1, -self.car["max_speed"]/2)
         else:
-            self.speed *= 0.95  # Gradually slow down if no buttons pressed
+            self.car["speed"] *= 0.95  # Gradually slow down
 
-        self.score = self.speed
+        self.speedometer = self.car["speed"]
+
+        # Turning left and right
+        if pyxel.btn(pyxel.KEY_LEFT) \
+        or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
+            self.car["angle"] -= self.car["turn_speed"]
+            # DEBUGGING
+            print("car angle:", self.car["angle"],    '\n' +
+                  "car x:",     self.car["pos"]["x"], '\n' +
+                  "car y:",     self.car["pos"]["y"], '\n'
+                  )
+
+        if pyxel.btn(pyxel.KEY_RIGHT) \
+        or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
+            self.car["angle"] += self.car["turn_speed"]
+            # DEBUGGING
+            print("car angle:", self.car["angle"],    '\n' +
+                  "car x:",     self.car["pos"]["x"], '\n' +
+                  "car y:",     self.car["pos"]["y"], '\n'
+                  )
+
+        new_x = math.cos(self.car["angle"]) * self.car["speed"]
+        new_y = math.sin(self.car["angle"]) * self.car["speed"]
+        self.car["pos"]["x"] += new_x
+        self.car["pos"]["y"] += new_y
+
+   # def blt_car(self):
+   # """Determine which sprite to blit based on axis snapping."""
+   #     if (rotationtosnap == 0)
+   #         return 0.0f;
+   #     var modrot = rotationtosnap  % mathhelper.piover4;
+   #     float finalrot;
+   #     if (modrot < roundedpiover8)
+   #     {
+   #         if (modrot < -roundedpiover8)
+   #             finalrot = rotationtosnap + -mathhelper.piover4 - modrot;
+   #         else
+   #             finalrot = rotationtosnap - modrot;
+   #     }
+   #     else
+   #         finalrot = rotationtosnap + mathhelper.piover4 - modrot;
+   #     return (float)math.round(finalrot, 3);
+
+   #     x1 = self.car["pos"]["x"]
+   #     y1 = self.car["pos"]["y"]
+   #     pyxel.blt(x1, y1, 0, 0, 0, 8, 8, 0)
 
     def check_death(self):
-        """Exactly what it says, checked each frame."""
-        if self.car_x < 0 or self.car_y < 0 or self.car_x >= SCREEN_W or self.car_y >= SCREEN_H:
-            self.die()
-
-    def die(self):
-        self.death = True
-        pyxel.stop()
-        pyxel.play(0, 1)
+        if self.car["pos"]["x"] <  0 \
+        or self.car["pos"]["y"] <  0 \
+        or self.car["pos"]["x"] >= SCREEN_W \
+        or self.car["pos"]["y"] >= SCREEN_H:
+            self.death = True
+            pyxel.stop()
+            pyxel.play(0, 1)
 
     def draw(self):
         """Blit entities onto screen each frame."""
@@ -168,27 +203,27 @@ class App:
         pyxel.cls(3)
 
         # Draw triangle
-        x1 = self.car_x + math.cos(self.car_angle) * 8
-        y1 = self.car_y + math.sin(self.car_angle) * 8
-        # x2 = self.car_x + math.cos(self.car_angle + 2.5) * 5
-        # y2 = self.car_y + math.sin(self.car_angle + 2.5) * 5
-        # x3 = self.car_x + math.cos(self.car_angle - 2.5) * 5
-        # y3 = self.car_y + math.sin(self.car_angle - 2.5) * 5
-
+        # x1 = self.car["pos"]["x"] + math.cos(self.car["angle"]) * 8
+        # y1 = self.car["pos"]["y"] + math.sin(self.car["angle"]) * 8
+        # x2 = self.car["pos"]["x"] + math.cos(self.car["angle"] + 2.5) * 5
+        # y2 = self.car["pos"]["y"] + math.sin(self.car["angle"] + 2.5) * 5
+        # x3 = self.car["pos"]["x"] + math.cos(self.car["angle"] - 2.5) * 5
+        # y3 = self.car["pos"]["y"] + math.sin(self.car["angle"] - 2.5) * 5
         # pyxel.tri(x1, y1, x2, y2, x3, y3, 200)
 
-        # Draw car from resources.pyxres
+        x1 = self.car["pos"]["x"]
+        y1 = self.car["pos"]["y"]
         pyxel.blt(x1, y1, 0, 0, 0, 8, 8, 0)
 
-        # Draw score
-        pyxel.rect(0, 0, SCREEN_W, SCORE_H, 5)
-        pyxel.text(1, 1, f"{self.score}", 6)
+        # Draw speedometer
+        pyxel.rect(0, 0, SCREEN_W/6, SCORE_H, 5)
+        pyxel.text(1, 1, f"SPEED: {self.speedometer:.1f}", 6)
 
     def draw_death(self):
         """Show death screen."""
         pyxel.cls(8)
         for i, text in enumerate(
-            ["GAME OVER", f"{self.score:04}", "(Q)UIT", "(R)ESTART"]
+            ["GAME OVER", "(Q)UIT", "(R)ESTART"]
         ):
             x = (SCREEN_W - len(text) * pyxel.FONT_WIDTH) // 2
             pyxel.text(x, 5 + (pyxel.FONT_HEIGHT + 2) * i, text, 0)
