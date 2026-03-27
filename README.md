@@ -22,7 +22,7 @@ We have a few options for creating a game with Pyxel.  It works on all platforms
 
 ## Setup for VSCode
 
-0. No idea yet.
+0. No idea yet.  Would someone translate all the steps below into this for VSCode?
 
 ## Linux Setup for Vim/Nano/Emacs/etc
 
@@ -34,7 +34,7 @@ We have a few options for creating a game with Pyxel.  It works on all platforms
    ```bash
    git clone https://github.com/brianspragge/csclub26.git
    ```
-3. (Optional) Might need to `git remote add` in order to work on this together.
+3. (Optional) Might need to 'git remote add' in order to work on this together.
 
 4. Create a python environment:
    ```bash
@@ -46,7 +46,7 @@ We have a few options for creating a game with Pyxel.  It works on all platforms
    ```bash
    source .env/bin/activate
    ```
-6. Upgrade the env:
+6. Upgrade the env's package manager 'Pip':
    ```bash
    pip install --upgrade pip
    ```

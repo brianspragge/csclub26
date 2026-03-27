@@ -11,6 +11,7 @@ import math
 SCREEN_W = 256
 SCREEN_H = 256
 SCORE_H  = pyxel.FONT_HEIGHT
+PI       = math.pi
 
 class App:
     def __init__(self):
@@ -103,8 +104,7 @@ class App:
 
     def reset(self):
         """Reset game state and objects on game restart."""
-        self.death       = False
-        self.speedometer = 0.0
+        self.death           = False
         self.car["pos"]["x"] = SCREEN_W / 2
         self.car["pos"]["y"] = SCREEN_H / 2
         self.car["angle"]    = 0.0
@@ -131,59 +131,56 @@ class App:
         # Gas and brake
         if pyxel.btn(pyxel.KEY_UP) \
         or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
-            self.car["speed"] = min(self.car["speed"] + 0.1, self.car["max_speed"])
+            self.car["speed"] = min(self.car["speed"] + 0.1, 
+                                    self.car["max_speed"])
         elif pyxel.btn(pyxel.KEY_DOWN) \
         or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
-            self.car["speed"] = max(self.car["speed"] - 0.1, -self.car["max_speed"]/2)
+            self.car["speed"] = max(self.car["speed"] - 0.1,
+                                    -self.car["max_speed"]/2)
         else:
             self.car["speed"] *= 0.95  # Gradually slow down
-
-        self.speedometer = self.car["speed"]
 
         # Turning left and right
         if pyxel.btn(pyxel.KEY_LEFT) \
         or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             self.car["angle"] -= self.car["turn_speed"]
-            # DEBUGGING
-            print("car angle:", self.car["angle"],    '\n' +
-                  "car x:",     self.car["pos"]["x"], '\n' +
-                  "car y:",     self.car["pos"]["y"], '\n'
-                  )
 
         if pyxel.btn(pyxel.KEY_RIGHT) \
         or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.car["angle"] += self.car["turn_speed"]
-            # DEBUGGING
-            print("car angle:", self.car["angle"],    '\n' +
-                  "car x:",     self.car["pos"]["x"], '\n' +
-                  "car y:",     self.car["pos"]["y"], '\n'
-                  )
 
         new_x = math.cos(self.car["angle"]) * self.car["speed"]
         new_y = math.sin(self.car["angle"]) * self.car["speed"]
         self.car["pos"]["x"] += new_x
         self.car["pos"]["y"] += new_y
 
-   # def blt_car(self):
-   # """Determine which sprite to blit based on axis snapping."""
-   #     if (rotationtosnap == 0)
-   #         return 0.0f;
-   #     var modrot = rotationtosnap  % mathhelper.piover4;
-   #     float finalrot;
-   #     if (modrot < roundedpiover8)
-   #     {
-   #         if (modrot < -roundedpiover8)
-   #             finalrot = rotationtosnap + -mathhelper.piover4 - modrot;
-   #         else
-   #             finalrot = rotationtosnap - modrot;
-   #     }
-   #     else
-   #         finalrot = rotationtosnap + mathhelper.piover4 - modrot;
-   #     return (float)math.round(finalrot, 3);
+        # Reset angle after one complete rotation
+        self.car["angle"] = self.car["angle"] % (2 * PI)
 
-   #     x1 = self.car["pos"]["x"]
-   #     y1 = self.car["pos"]["y"]
-   #     pyxel.blt(x1, y1, 0, 0, 0, 8, 8, 0)
+    def blt_car(self):
+        """Determine which sprite to blit based on axis snapping."""
+        x     = int(self.car["pos"]["x"])
+        y     = int(self.car["pos"]["y"])
+        angle = self.car["angle"]
+
+        # Snap sprite on nearest 90 degrees based on car angle
+        direction = round((angle % (2 * PI)) / (PI / 2)) % 4
+
+        # RIGHT
+        if direction == 0:
+            pyxel.blt(x, y, 0, 8, 0, 8, 8, 0)
+        # DOWN
+        elif direction == 1:
+            pyxel.blt(x, y, 0, 0, 0, 8, -8, 0)
+        # LEFT
+        elif direction == 2:
+            pyxel.blt(x, y, 0, 8, 0, -8, 8, 0)
+        # UP
+        elif direction == 3:
+            pyxel.blt(x, y, 0, 0, 0, 8, 8, 0)
+        # DEBUG
+        print(f"Direction: {direction}", '\n'
+              f"Angle:     {angle:.2f}")
 
     def check_death(self):
         if self.car["pos"]["x"] <  0 \
@@ -211,13 +208,11 @@ class App:
         # y3 = self.car["pos"]["y"] + math.sin(self.car["angle"] - 2.5) * 5
         # pyxel.tri(x1, y1, x2, y2, x3, y3, 200)
 
-        x1 = self.car["pos"]["x"]
-        y1 = self.car["pos"]["y"]
-        pyxel.blt(x1, y1, 0, 0, 0, 8, 8, 0)
+        self.blt_car()
 
         # Draw speedometer
         pyxel.rect(0, 0, SCREEN_W/6, SCORE_H, 5)
-        pyxel.text(1, 1, f"SPEED: {self.speedometer:.1f}", 6)
+        pyxel.text(1, 1, f"SPEED: {self.car["speed"]:.1f}", 6)
 
     def draw_death(self):
         """Show death screen."""
